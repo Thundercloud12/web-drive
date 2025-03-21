@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+input {
+    background-color: white;
+    color: black;
+}
+
+.dark input {
+    background-color: #2D3748;
+    /* Dark gray */
+    color: white;
+}
