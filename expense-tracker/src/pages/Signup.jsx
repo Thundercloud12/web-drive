@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../appwrite/auth';
-import signupImage from '../assets/loginImage.png'; // Background image
+import signupImage from '../assets/loginImage.png'; 
 
 function Signup() {
   const navigate = useNavigate();
@@ -33,11 +33,8 @@ function Signup() {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-r from-green-200 to-green-300">
-      
-      {/* Background Image with Blur Effect */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat filter blur-sm opacity-30" style={{ backgroundImage: `url(${signupImage})` }}></div>
       
-      {/* Signup Box */}
       <div className="relative w-full max-w-md bg-white p-8 rounded-xl shadow-xl">
         <h2 className="text-center text-3xl font-bold text-gray-800 mb-4">Create an Account</h2>
         <p className="text-center text-gray-600 mb-6">Sign up to start managing your finances.</p>
@@ -45,7 +42,6 @@ function Signup() {
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Name
@@ -61,7 +57,6 @@ function Signup() {
             />
           </div>
 
-          {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -77,7 +72,6 @@ function Signup() {
             />
           </div>
 
-          {/* Password Field with Toggle */}
           <div className="relative">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
@@ -91,7 +85,6 @@ function Signup() {
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:border-green-400 pr-10"
               placeholder="Enter your password"
             />
-            {/* Toggle Button */}
             <button
               type="button"
               onClick={() => setShowPass(!showPass)}
@@ -101,7 +94,6 @@ function Signup() {
             </button>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className={`w-full py-2 px-4 rounded-lg transition duration-200 ${
@@ -114,8 +106,6 @@ function Signup() {
             {submit ? "Signing In..." : "Sign In"}
           </button>
         </form>
-
-        {/* Login Link */}
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{' '}
           <Link to="/login" className="text-green-600 hover:underline">
