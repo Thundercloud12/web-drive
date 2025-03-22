@@ -84,7 +84,6 @@ const ExpenseCreation = () => {
     setError("")
   };
 
-  // Correct Delete Function
   const deleteExpense = async (expenseId) => {
     try {
       await service.deleteExpense(expenseId);
