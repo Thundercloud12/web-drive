@@ -1,106 +1,54 @@
-import { Search } from "lucide-react";
-import RecipeCard from "../components/RecipeCard";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import React from 'react';
+import heroImage from "../assets/heroImage.png"; // Import your hero image
+import { Link } from 'react-router-dom';
 
+export default function HomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  console.log("Rendering Layout Component");
 
-
-
-const HomePage = () => {
-	const [recipes, setRecipes] = useState([]);
-	const [loading, setLoading] = useState(true);
-
-
- const fetchRecipes = async (queryparam) => {
-  try {
-    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${queryparam}`);
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-
-    // Wait for JSON parsing
-    const data = await res.json();
-    
-    console.log("API Response Data:", data); 
-    setRecipes(data.meals || []);
-    setLoading(false);
-    } catch (error) {
-      console.log(error);
-      
-    }
-  }
-
-  const suggestrecipe = async () => {
-    try {
-      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/random.php`)
-      const recipes = await res.json()
-      setRecipes(recipes.meals || []); 
-    } catch (error) {
-      
-    }
-  }
-
-  useEffect(() => {
-    fetchRecipes("cake")
-  }, [])
-
-  const handleSearchRecipe = (e) => {
-    e.preventDefault();
-    fetchRecipes(e.target[0].value)
-  }
-
-	return (
-		<div className="bg-[#faf9fb] p-10 flex flex-nowrap">
-      <div className="flex-1 ml-6">
-        <div className="max-w-screen-lg mx-auto">
-          <div className="flex gap-x-10">
-          <form onSubmit={handleSearchRecipe}>
-            <label className="input shadow-md flex items-center gap-2">
-              <Search size={"24"} />
-              <input
-                type="text"
-                className="text-sm md:text-md grow"
-                placeholder="What do you want to cook today?"
-              />
-            </label>
-          </form>
-         <Button className="bg-fuchsia-100 text-amber-500" onClick={(e) => {
-          e.preventDefault()
-          suggestrecipe()
-         }}>Suggest me something</Button>
+  return (
+    // Changed from "bg-[#e7f0e4]" to a gradient
+    <div className="min-h-screen bg-gradient-to-r from-[#e7f0e4] to-[#cde7d6]">
+      <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+        >
+          {/* Empty space for main image */}
+          <div className="h-60 w-60 bg-transparent" />
         </div>
+
+        {/* Hero Container: flex on larger screens to position image on the left, text on the right */}
+        <div className="mx-auto max-w-7xl py-16 sm:py-32 lg:py-40 flex flex-col items-center md:flex-row md:justify-center md:gap-10">
           
-
-
-          <h1 className="font-bold text-3xl md:text-5xl mt-4">
-            Recommended Recipes
-          </h1>
-          <p className="text-slate-500 font-semibold ml-1 my-2 text-sm tracking-tight">
-            Popular choices
-          </p>
-
-          <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {!loading &&
-              recipes.map((recipe , index) => (
-                <RecipeCard key={index} recipe={recipe} />
-              ))}
-
-            {loading &&
-              [...Array(9)].map((_, index) => (
-                <div key={index} className="flex flex-col gap-4 w-full">
-                  <div className="skeleton h-32 w-full"></div>
-                  <div className="flex justify-between">
-                    <div className="skeleton h-4 w-28"></div>
-                    <div className="skeleton h-4 w-24"></div>
-                  </div>
-                  <div className="skeleton h-4 w-1/2"></div>
-                </div>
-              ))}
+          {/* Left side: Hero Image */}
+          <div className="flex justify-center md:w-1/2 mb-10 md:mb-0">
+            <img
+              src={heroImage}
+              alt="Finance Hero"
+              className="w-full h-auto max-w-sm md:max-w-md object-contain"
+            />
           </div>
+          
+          {/* Right side: Text Section */}
+          <div className="md:w-1/2 text-center md:text-left">
+            <h1 className="text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">
+              Personal Budget Planner
+            </h1>
+            <p className="mt-6 text-lg text-gray-600 sm:text-xl">
+              Because managing your finances should not feel like a game of Tetris.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center md:justify-start gap-x-6 gap-y-4">
+               <Link
+                className="px-4 py-2 bg-green-700 text-white text-lg font-semibold rounded-md hover:bg-green-800 transition"
+                to="/signup"
+              > Get Started </Link>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
-	);
-};
-export default HomePage;
+  );
+}
