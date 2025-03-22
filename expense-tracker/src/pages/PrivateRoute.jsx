@@ -11,7 +11,7 @@ const PublicRoute = () => {
     const checkAuth = async () => {
       try {
         const user = await authService.checkAuthStatus();
-        setIsAuth(!!user); // Set true if user exists, false otherwise.
+        setIsAuth(!!user); 
       } catch (error) {
         setIsAuth(false);
       }
