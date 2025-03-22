@@ -35,16 +35,13 @@ const Overview = () => {
     fetchExpenses();
   }, [user_id]);
 
-  // Prepare labels and dataset values.
   const labels = expenses.map(exp => exp.title);
   const expenseLimitData = expenses.map(item => item.expenselimit);
   const expenditureData = expenses.map(item => item.expenditure);
 
-  // Calculate totals (if needed elsewhere)
   const totalExpenseLimit = expenses.reduce((sum, exp) => sum + (exp.expenselimit || 0), 0);
   const totalExpenditure = expenses.reduce((sum, exp) => sum + (exp.expenditure || 0), 0);
 
-  // Setup data for a grouped bar chart (not stacked)
   const data = {
     labels,
     datasets: [
@@ -63,7 +60,7 @@ const Overview = () => {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // Allows container height to control chart height
+    maintainAspectRatio: false, 
     plugins: {
       title: {
         display: true,
@@ -79,14 +76,14 @@ const Overview = () => {
     },
     scales: {
       x: {
-        stacked: false, // Disable stacking so bars are grouped side by side
+        stacked: false, 
       },
       y: {
         beginAtZero: true,
         stacked: false,
       },
     },
-    barPercentage: 0.5, // Adjusts bar width (feel free to tweak this)
+    barPercentage: 0.5, 
   };
 
 return (
