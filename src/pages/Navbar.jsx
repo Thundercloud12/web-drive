@@ -10,7 +10,7 @@ const Navbar = ({ isAuth, setIsAuth }) => {
     try {
       await authService.logout();
       setIsAuth(false);
-      navigate('/'); // Redirect to homepage after logout
+      navigate('/'); 
     } catch (error) {
       console.log("Logout error:", error);
     }
