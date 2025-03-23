@@ -8,21 +8,16 @@ export default function HomePage() {
   console.log("Rendering Layout Component");
 
   return (
-    // Changed from "bg-[#e7f0e4]" to a gradient
     <div className="min-h-screen bg-gradient-to-r from-[#e7f0e4] to-[#cde7d6]">
       <div className="relative isolate px-6 pt-14 lg:px-8">
         <div
           aria-hidden="true"
           className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
         >
-          {/* Empty space for main image */}
           <div className="h-60 w-60 bg-transparent" />
         </div>
-
-        {/* Hero Container: flex on larger screens to position image on the left, text on the right */}
         <div className="mx-auto max-w-7xl py-16 sm:py-32 lg:py-40 flex flex-col items-center md:flex-row md:justify-center md:gap-10">
-          
-          {/* Left side: Hero Image */}
+    
           <div className="flex justify-center md:w-1/2 mb-10 md:mb-0">
             <img
               src={heroImage}
@@ -30,8 +25,7 @@ export default function HomePage() {
               className="w-full h-auto max-w-sm md:max-w-md object-contain"
             />
           </div>
-          
-          {/* Right side: Text Section */}
+      
           <div className="md:w-1/2 text-center md:text-left">
             <h1 className="text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">
               Personal Budget Planner
