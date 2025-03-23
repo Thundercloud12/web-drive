@@ -46,7 +46,7 @@ const Overview = () => {
     labels,
     datasets: [
       {
-        label: 'Expense Limit',
+        label: 'Budget',
         data: expenseLimitData,
         backgroundColor: 'rgba(54, 162, 235, 0.5)', // Light blue
       },
@@ -64,7 +64,7 @@ const Overview = () => {
     plugins: {
       title: {
         display: true,
-        text: 'Grouped Bar Chart: Expense Limit vs Expenditure',
+        text: 'Grouped Bar Chart: Budget vs Expenditure',
       },
       tooltip: {
         mode: 'index',
@@ -91,7 +91,7 @@ return (
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
       <div className="card bg-white shadow-md p-6 rounded-lg">
-        <h3 className="text-xl font-semibold">Total Expense Limit</h3>
+        <h3 className="text-xl font-semibold">Budget</h3>
         <p className="text-2xl font-bold">₹{totalExpenseLimit}</p>
       </div>
       <div className="card bg-white shadow-md p-6 rounded-lg">
