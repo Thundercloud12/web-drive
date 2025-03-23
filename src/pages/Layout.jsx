@@ -10,7 +10,6 @@ const Layout = () => {
     <div className="drawer lg:drawer-open min-h-screen bg-gradient-to-r from-[#e7f0e4] to-[#cde7d6]">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
 
-      {/* Navbar with Menu Icon for Smaller Screens */}
       <div className="flex items-center justify-between bg-white shadow-md p-4 lg:hidden">
         <h1 className="text-lg font-bold text-gray-700">Expense Tracker</h1>
         <label htmlFor="my-drawer-2" className="cursor-pointer">
@@ -18,12 +17,10 @@ const Layout = () => {
         </label>
       </div>
 
-      {/* Main Content */}
       <div className="drawer-content flex flex-col p-4 mt-20">
         <Outlet />
       </div>
 
-      {/* Sidebar Drawer */}
       <div className="drawer-side">
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
         
