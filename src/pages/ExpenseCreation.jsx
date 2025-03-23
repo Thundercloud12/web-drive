@@ -106,7 +106,14 @@ const ExpenseCreation = () => {
               <button className="btn btn-error" onClick={() => deleteExpense(exp.$id)}>
                 <RiDeleteBin6Line />
               </button>
-              <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+              <button className="btn btn-primary" onClick={() => {
+                  setTitle(exp.title);
+                  setExpense(exp.expenselimit);
+                  setExpenditure(exp.expenditure);
+                  setIsEditing(true);
+                  setEditingExpenseId(exp.$id);
+                  setModalOpen(true);
+                }}>
                 <GrUpdate />
               </button>
             </div>
