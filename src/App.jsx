@@ -34,7 +34,7 @@ function App() {
     checkAuth();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <span className="loading loading-spinner loading-xl"></span>;
 
   return (
     <Router>
