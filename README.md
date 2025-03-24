@@ -1,7 +1,3 @@
-Here’s your **README.md** file for the **Expense Tracker** project:  
-
----
-
 # 📌 Expense Tracker  
 
 Welcome to my **ReactJS-based Expense Tracker**! 🚀 This app helps users efficiently **track their expenses**, **set spending limits**, and **visualize financial data** through interactive charts.  
