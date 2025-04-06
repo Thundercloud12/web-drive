@@ -2,9 +2,12 @@ import { Router } from "express";
 import { adminLogin, fetchUnverifiedUsers, login, registerUser, verifySignedUpUsers } from "../controllers/user.controller.js";
 import upload from "../middleware/uploadfile.middleware.js";
 import { addBook, fetchAllBooks, getUsersWithRentals, pendingBooks } from "../controllers/functionality.controller.js";
+import { getAdminDashboardData, getUserDashboardData } from "../controllers/dashboard.controller.js";
 
 const router = Router()
 
+router.get("/admin/dashboard", getAdminDashboardData);
+router.get("/user/dashboard/:userId", getUserDashboardData);
 router.post("/register", upload.single("idCardImage"), registerUser)
 router.post("/login", login);
 router.post("/login/admin", adminLogin)

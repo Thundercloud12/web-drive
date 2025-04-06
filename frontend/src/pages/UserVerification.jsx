@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { CheckCircle, XCircle } from "lucide-react";
 
 const UserVerification = () => {
   const [users, setUsers] = useState([]);
@@ -9,7 +10,9 @@ const UserVerification = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:4300/api/v1/users/fetch-notverified-users");
+        const response = await axios.get(
+          "http://localhost:4300/api/v1/users/fetch-notverified-users"
+        );
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -18,13 +21,15 @@ const UserVerification = () => {
     fetchUsers();
   }, []);
 
-  // Function to handle user verification
   const handleVerify = async (feesReceiptNo, email) => {
     setLoading(true);
     try {
-      const repsonse = await axios.post("http://localhost:4300/api/v1/users/verify-signed-up-user", {feesReceiptNo, email});
-      setUsers(users.filter(user => user.feesReceiptNo !== feesReceiptNo)); 
-      setSelectedUser(null); 
+      await axios.post(
+        "http://localhost:4300/api/v1/users/verify-signed-up-user",
+        { feesReceiptNo, email }
+      );
+      setUsers(users.filter((user) => user.feesReceiptNo !== feesReceiptNo));
+      setSelectedUser(null);
     } catch (error) {
       console.error("Error verifying user:", error);
     }
@@ -32,68 +37,102 @@ const UserVerification = () => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">User Verification</h2>
+    <div className="p-6 min-h-screen bg-gradient-to-br from-[#f5ede3] to-[#d8c2a9]">
+      <h2 className="text-3xl font-bold mb-6 text-center text-[#4a3628]">User Verification</h2>
 
-      {/* User List */}
-      <div className="overflow-x-auto">
-        <table className="table w-full bg-white shadow-md rounded-lg">
-          <thead>
-            <tr className="bg-gray-100 text-gray-600">
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Actions</th>
+      <div className="overflow-x-auto shadow-lg rounded-xl">
+        <table className="min-w-full bg-white rounded-xl overflow-hidden">
+          <thead className="bg-[#e9d9c5] text-[#4a3628] font-semibold">
+            <tr>
+              <th className="py-3 px-4 text-left">ID</th>
+              <th className="py-3 px-4 text-left">Name</th>
+              <th className="py-3 px-4 text-left">Email</th>
+              <th className="py-3 px-4 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
-              <tr key={user._id} className="hover:bg-gray-50">
-                <td>{user._id}</td>
-                <td>{user.fullname} {user.surname}</td>
-                <td>{user.email}</td>
-                <td>
+            {users.map((user) => (
+              <tr
+                key={user._id}
+                className="hover:bg-[#fcf6f0] transition duration-200 text-sm"
+              >
+                <td className="py-3 px-4">{user._id.slice(-6)}</td>
+                <td className="py-3 px-4">{user.fullname} {user.surname}</td>
+                <td className="py-3 px-4">{user.email}</td>
+                <td className="py-3 px-4">
                   <button
                     onClick={() => setSelectedUser(user)}
-                    className="btn btn-sm btn-outline btn-primary"
+                    className="bg-[#6b4f37] text-white px-3 py-1 rounded hover:bg-[#4a3628] transition"
                   >
                     View Details
                   </button>
                 </td>
               </tr>
             ))}
+            {users.length === 0 && (
+              <tr>
+                <td colSpan="4" className="text-center py-5 text-gray-500">
+                  No users pending verification
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* User Details Modal */}
+      {/* Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-xl font-bold mb-2">{selectedUser.fullname} {selectedUser.surname}</h3>
-            <p>Email: {selectedUser.email}</p>
-            <p>Receipt No: {selectedUser.feesReceiptNo}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-6 w-[95%] max-w-md shadow-lg relative">
+            <h3 className="text-2xl font-bold mb-2 text-[#4a3628]">
+              {selectedUser.fullname} {selectedUser.surname}
+            </h3>
+            <p className="text-gray-700 mb-1">
+              <strong>Email:</strong> {selectedUser.email}
+            </p>
+            <p className="text-gray-700 mb-4">
+              <strong>Receipt No:</strong> {selectedUser.feesReceiptNo}
+            </p>
 
-            {/* User Images */}
-            <div className="mt-4">
-              <h4 className="font-semibold">Uploaded Images:</h4>
-              <img src={selectedUser.profileImage} alt="Profile" className="w-full rounded-lg mb-2" />
-              <img src={selectedUser.idCardImage} alt="ID Card" className="w-full rounded-lg" />
+            <div className="space-y-3 mb-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1 font-semibold">Profile Image:</p>
+                <img
+                  src={selectedUser.profileImage}
+                  alt="Profile"
+                  className="w-full rounded-md border"
+                  onError={(e) => (e.target.src = "/fallback-user.png")}
+                />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1 font-semibold">ID Card Image:</p>
+                <img
+                  src={selectedUser.idCardImage}
+                  alt="ID Card"
+                  className="w-full rounded-md border"
+                  onError={(e) => (e.target.src = "/fallback-id.png")}
+                />
+              </div>
             </div>
 
-            {/* Verification Buttons */}
-            <div className="mt-4 flex justify-between">
+            <div className="flex justify-between mt-6">
               <button
-                onClick={() => handleVerify(selectedUser.feesReceiptNo, selectedUser.email)}
-                className={`btn btn-success ${loading ? "btn-disabled" : ""}`}
+                onClick={() =>
+                  handleVerify(selectedUser.feesReceiptNo, selectedUser.email)
+                }
                 disabled={loading}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition text-white ${
+                  loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                }`}
               >
+                <CheckCircle size={18} />
                 {loading ? "Verifying..." : "Verify"}
               </button>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="btn btn-outline btn-error"
+                className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-md"
               >
+                <XCircle size={18} />
                 Close
               </button>
             </div>

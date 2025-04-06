@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import User from "../models/User.js";
-import Admin from "../models/Admin.js";
-import Book from "../models/Book.js"
-import Rental from "../models/Rental.js";
+import User from "../models/userModel.js";
+import Admin from "../models/admin.model.js";
+import Book from "../models/bookModel.js"
+import Rental from "../models/rentalmodel.js";
 
 const fetchAllBooks = async(req,res) => {
    try {

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Lottie from "lottie-react";
+
 
 function Signup() {
   const navigate = useNavigate();
@@ -9,17 +13,24 @@ function Signup() {
   const [feesReceiptNo, setFeesReceiptNo] = useState("");
   const [email, setEmail] = useState("");
   const [idCardImage, setIdCardImage] = useState(null);
-  const [error, setError] = useState("");
   const [submit, setSubmit] = useState(false);
 
   const handleFileChange = (e) => {
-    setIdCardImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file && !file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed!");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File must be less than 2MB!");
+      return;
+    }
+    setIdCardImage(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmit(true);
-    setError("");
 
     const formData = new FormData();
     formData.append("fullname", fullname);
@@ -29,17 +40,16 @@ function Signup() {
     formData.append("idCardImage", idCardImage);
 
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         "http://localhost:4300/api/v1/users/register",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      if (response.data.token) {
-        navigate("/login");
-      }
-    } catch (error) {
-      setError(error.response?.data?.msg || "Signup failed, try again!");
+      toast.success("Signup successful! Please login.");
+      navigate("/login");
+    } catch (err) {
+      toast.error(err.response?.data?.msg || "Signup failed. Try again!");
     }
 
     setSubmit(false);
@@ -48,14 +58,15 @@ function Signup() {
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-r from-[#e7dac7] to-[#c2a27a] mt-10 w-full h-full">
       <div className="relative w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-[#c2a27a]">
+        
+       
+
         <h2 className="text-center text-3xl font-serif font-bold text-[#4a3628] mb-4">
           Create an Account
         </h2>
         <p className="text-center text-gray-700 mb-6">
           Join the library and explore a world of knowledge.
         </p>
-
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

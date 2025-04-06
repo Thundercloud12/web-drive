@@ -3,11 +3,13 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   fullname: '',
   surname: '',
-  feesReceiptNo: '',
   email: '',
-  idCardImage: null,
-  error: '',
-  submit: false,
+  feesReceiptNo: '',
+  idCardImage: null,      // Could be File or URL
+  profileImage: null,     // Optional: for profile picture
+  error: '',              // Error message from server/validation
+  success: '',            // Success message (optional)
+  submit: false,          // Whether form has been submitted
 };
 
 const signupSlice = createSlice({
@@ -21,11 +23,15 @@ const signupSlice = createSlice({
     setError: (state, action) => {
       state.error = action.payload;
     },
+    setSuccess: (state, action) => {
+      state.success = action.payload;
+    },
     setSubmit: (state, action) => {
       state.submit = action.payload;
     },
+    resetForm: () => initialState,
   },
 });
 
-export const { updateField, setError, setSubmit } = signupSlice.actions;
+export const { updateField, setError, setSuccess, setSubmit, resetForm } = signupSlice.actions;
 export default signupSlice.reducer;

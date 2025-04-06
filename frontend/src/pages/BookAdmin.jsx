@@ -1,86 +1,144 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const BooksAdmin = () => {
   const [books, setBooks] = useState([]);
-  const [form, setForm] = useState({ title: "", description: "", image: "" });
+  const [form, setForm] = useState({
+    title: "",
+    author: "",
+    description: "",
+    quantity: "",
+    ISBN: "",
+    image: null,
+  });
 
   const fetchBooks = async () => {
     try {
       const res = await axios.get("http://localhost:4300/api/v1/books");
-      setBooks(res.data);
+      setBooks(res.data.books || []);
     } catch (error) {
       console.error("Error fetching books", error);
     }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("author", author);
-  formData.append("description", description);
-  formData.append("quantity", quantity);
-  formData.append("ISBN", ISBN);
-  formData.append("image", imageFile); // imageFile is your selected image
+  const handleImageChange = (e) => {
+    setForm((prev) => ({ ...prev, image: e.target.files[0] }));
+  };
 
-  try {
-    const response = await axios.post("http://localhost:4300/api/v1/rentals/issue", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log("Book added:", response.data);
-  } catch (error) {
-    console.error("Error adding book:", error);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("title", form.title);
+    formData.append("author", form.author);
+    formData.append("description", form.description);
+    formData.append("quantity", form.quantity);
+    formData.append("ISBN", form.ISBN);
+    formData.append("image", form.image);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4300/api/v1/books/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true,
+        }
+      );
+      console.log("Book added:", response.data);
+      fetchBooks(); // Refresh book list
+    } catch (error) {
+      console.error("Error adding book:", error.response?.data || error);
+    }
+  };
 
   useEffect(() => {
     fetchBooks();
   }, []);
 
   return (
-    <div className="p-6 bg-gradient-to-br from-[#f6eee4] to-[#d6bfa5] min-h-screen">
-      <h2 className="text-3xl text-center text-[#4a3628] font-bold mb-6">Manage Books</h2>
+    <div className="p-6 bg-[#0d1117] text-white min-h-screen">
+      <h2 className="text-3xl text-center font-bold mb-6">📚 Admin Book Panel</h2>
 
-      <div className="bg-white p-4 rounded-xl border border-[#c2a27a] mb-6 max-w-xl mx-auto">
-        <h3 className="text-xl font-semibold mb-4 text-[#4a3628]">Add New Book</h3>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-[#161b22] p-6 rounded-xl border border-gray-700 max-w-xl mx-auto mb-10"
+      >
+        <h3 className="text-xl font-semibold mb-4">➕ Add New Book</h3>
         <input
           type="text"
+          name="title"
           placeholder="Book Title"
-          className="input input-bordered w-full mb-2"
           value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          onChange={handleInputChange}
+          className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+        />
+        <input
+          type="text"
+          name="author"
+          placeholder="Author"
+          value={form.author}
+          onChange={handleInputChange}
+          className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
         />
         <textarea
-          placeholder="Book Description"
-          className="textarea textarea-bordered w-full mb-2"
+          name="description"
+          placeholder="Description"
           value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          onChange={handleInputChange}
+          className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+        />
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Quantity"
+          value={form.quantity}
+          onChange={handleInputChange}
+          className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
         />
         <input
           type="text"
-          placeholder="Image URL"
-          className="input input-bordered w-full mb-2"
-          value={form.image}
-          onChange={(e) => setForm({ ...form, image: e.target.value })}
+          name="ISBN"
+          placeholder="ISBN"
+          value={form.ISBN}
+          onChange={handleInputChange}
+          className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
         />
-        <button className="btn w-full bg-[#6b4f37] text-white hover:bg-[#4a3628]" onClick={handleSubmit}>
+        <input
+          type="file"
+          onChange={handleImageChange}
+          className="w-full p-2 mb-4 rounded bg-[#0d1117] border border-gray-700"
+          accept="image/*"
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold"
+        >
           Add Book
         </button>
-      </div>
+      </form>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {books.map(book => (
-          <div key={book._id} className="card shadow-xl bg-white border border-[#c2a27a]">
-            <figure><img src={book.image} alt={book.title} className="h-48 object-cover w-full" /></figure>
-            <div className="card-body">
-              <h2 className="card-title text-[#4a3628]">{book.title}</h2>
-              <p className="text-sm text-gray-600 truncate">{book.description}</p>
-            </div>
+        {books.map((book) => (
+          <div
+            key={book._id}
+            className="bg-[#161b22] border border-gray-700 rounded-xl p-4 shadow"
+          >
+            <img
+              src={book.image}
+              alt={book.title}
+              className="w-full h-48 object-cover rounded mb-2"
+            />
+            <h3 className="font-bold text-lg">{book.title}</h3>
+            <p className="text-sm text-gray-400">{book.author}</p>
+            <p className="text-sm mt-1">{book.description}</p>
           </div>
         ))}
       </div>

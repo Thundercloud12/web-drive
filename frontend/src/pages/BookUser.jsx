@@ -8,8 +8,10 @@ const BooksUser = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/books");
-      setBooks(res.data);
+      const res = await axios.get("http://localhost:4300/api/v1/books", {
+        withCredentials: true
+      });
+      setBooks(res.data.books || []);
     } catch (error) {
       console.error("Error fetching books", error);
     }
@@ -18,11 +20,16 @@ const BooksUser = () => {
   const handleIssue = async (bookId) => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:4300/api/v1/rentals/issue", { bookId });
-      alert("Request sent! Status set to pending.");
+      const res = await axios.post(
+        "http://localhost:4300/api/v1/rentals/issue",
+        { bookId },
+        { withCredentials: true }
+      );
+      alert("✅ Request sent! Status set to pending.");
       setSelectedBook(null);
     } catch (err) {
       console.error("Issue request failed", err);
+      alert("❌ Something went wrong while issuing the book.");
     }
     setLoading(false);
   };
@@ -32,19 +39,25 @@ const BooksUser = () => {
   }, []);
 
   return (
-    <div className="p-6 bg-gradient-to-br from-[#f6eee4] to-[#d6bfa5] min-h-screen">
-      <h2 className="text-3xl text-center text-[#4a3628] font-bold mb-6">Explore Available Books</h2>
+    <div className="p-6 bg-[#0d1117] text-white min-h-screen">
+      <h2 className="text-3xl text-center font-bold mb-6 text-white">📚 Explore Available Books</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {books.map(book => (
-          <div key={book._id} className="card shadow-xl bg-white border border-[#c2a27a]">
-            <figure><img src={book.image} alt={book.title} className="h-48 object-cover w-full" /></figure>
-            <div className="card-body">
-              <h2 className="card-title text-[#4a3628]">{book.title}</h2>
-              <p className="text-sm text-gray-600 truncate">{book.description}</p>
-              <div className="card-actions justify-end">
-                <button className="btn btn-sm bg-[#6b4f37] text-white hover:bg-[#4a3628]" onClick={() => setSelectedBook(book)}>View</button>
-              </div>
+          <div key={book._id} className="bg-[#161b22] border border-gray-700 rounded-lg overflow-hidden shadow-lg">
+            <img src={book.image} alt={book.title} className="h-48 w-full object-cover" />
+            <div className="p-4">
+              <h2 className="text-xl font-semibold">{book.title}</h2>
+              <p className="text-sm text-gray-400">{book.author}</p>
+              <p className="mt-2 text-sm text-gray-300 line-clamp-2">{book.description}</p>
+              <p className="mt-1 text-sm">Quantity: {book.quantity}</p>
+              <p className="text-sm text-gray-400">ISBN: {book.ISBN}</p>
+              <button
+                onClick={() => setSelectedBook(book)}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-1 rounded"
+              >
+                View & Issue
+              </button>
             </div>
           </div>
         ))}
@@ -52,19 +65,32 @@ const BooksUser = () => {
 
       {/* Modal */}
       {selectedBook && (
-        <dialog className="modal modal-open">
-          <div className="modal-box bg-white border border-[#c2a27a]">
-            <h3 className="font-bold text-xl text-[#4a3628]">{selectedBook.title}</h3>
-            <img src={selectedBook.image} alt={selectedBook.title} className="w-full h-60 object-cover my-4 rounded" />
-            <p className="text-sm text-gray-700">{selectedBook.description}</p>
-            <div className="modal-action flex justify-between items-center">
-              <button className="btn bg-gray-300" onClick={() => setSelectedBook(null)}>Close</button>
-              <button className="btn bg-[#6b4f37] text-white hover:bg-[#4a3628]" onClick={() => handleIssue(selectedBook._id)} disabled={loading}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
+          <div className="bg-[#161b22] border border-gray-600 rounded-lg p-6 w-[90%] md:w-1/2 max-w-xl">
+            <h3 className="text-xl font-bold mb-2">{selectedBook.title}</h3>
+            <img src={selectedBook.image} alt={selectedBook.title} className="w-full h-60 object-cover rounded" />
+            <p className="mt-4 text-gray-300">{selectedBook.description}</p>
+            <p className="mt-2 text-sm text-gray-400">Author: {selectedBook.author}</p>
+            <p className="text-sm text-gray-400">ISBN: {selectedBook.ISBN}</p>
+            <p className="text-sm text-gray-400">Quantity: {selectedBook.quantity}</p>
+
+            <div className="mt-4 flex justify-between">
+              <button
+                onClick={() => setSelectedBook(null)}
+                className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-1 rounded"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => handleIssue(selectedBook._id)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded"
+                disabled={loading}
+              >
                 {loading ? "Sending..." : "Issue Book"}
               </button>
             </div>
           </div>
-        </dialog>
+        </div>
       )}
     </div>
   );

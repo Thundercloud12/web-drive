@@ -2,57 +2,42 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 function Login() {
   const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("")
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submit, setSubmit] = useState(false);
 
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmit(true);
     setError("");
 
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-    console.log(username);
-    console.log(password);
-    
-    
     try {
-      
       const response = await axios.post(
         "http://localhost:4300/api/v1/users/login",
-        { username, password }, 
+        { username, password }
       );
 
-
       if (response.data.token) {
-        const userId = response.data.user_id; // Extract user_id from response
-
-        // Store token & user_id in local storage
+        const userId = response.data.user_id;
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user_id", userId);
 
         if (response.data.role === "admin") {
           navigate("/admin-login");
         } else {
-          // Redirect user to the dashboard with user_id as a URL parameter
           navigate(`/dashboard/${userId}`);
         }
       }
     } catch (error) {
-      console.log(error);
-      
+      console.error(error);
       setError(error.response?.data?.msg || "Login failed, try again!");
+    } finally {
+      setSubmit(false);
     }
-
-    setSubmit(false);
   };
 
   return (
@@ -76,7 +61,7 @@ function Login() {
               onChange={(e) => setUsername(e.target.value)}
               required
               className="mt-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-[#c2a27a]"
-              placeholder="Enter your username"
+              placeholder="Enter the username sent via email"
             />
           </div>
 
@@ -88,14 +73,9 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="mt-1 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-[#c2a27a]"
-              placeholder="Enter your surname"
+              placeholder="Enter your password"
             />
           </div>
-
-         
-
-       
-
 
           <button
             type="submit"
@@ -106,9 +86,14 @@ function Login() {
             }`}
             disabled={submit}
           >
-            {submit ? "Loggigng In..." : "Log Up"}
+            {submit ? "Logging In..." : "Log In"}
           </button>
         </form>
+
+        {/* 🧠 Add login guidance */}
+        <p className="text-sm text-center text-gray-500 mt-4">
+          📩 Credentials were sent to your email after verification.
+        </p>
       </div>
     </div>
   );
