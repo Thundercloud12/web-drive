@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../utils/axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Lottie from "lottie-react";
 
 
 function Signup() {
@@ -58,9 +57,6 @@ function Signup() {
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-r from-[#e7dac7] to-[#c2a27a] mt-10 w-full h-full">
       <div className="relative w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-[#c2a27a]">
-        
-       
-
         <h2 className="text-center text-3xl font-serif font-bold text-[#4a3628] mb-4">
           Create an Account
         </h2>

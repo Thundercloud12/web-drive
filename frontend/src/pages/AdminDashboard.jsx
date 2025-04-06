@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from "../utils/axios"; // ✅ FIXED
+
 
 const AdminDashboard = () => {
   const [usersWithRentals, setUsersWithRentals] = useState([]);

@@ -6,11 +6,19 @@ const Navbar = () => {
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
+  // Update auth state on mount and when localStorage changes
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role");
-    setIsLoggedIn(!!token);
-    if (userRole) setRole(userRole);
+    const checkAuth = () => {
+      const token = localStorage.getItem("token");
+      const userRole = localStorage.getItem("role");
+      setIsLoggedIn(!!token);
+      if (userRole) setRole(userRole);
+    };
+
+    checkAuth(); // initial call
+    window.addEventListener("storage", checkAuth); // sync across tabs
+
+    return () => window.removeEventListener("storage", checkAuth);
   }, []);
 
   const handleLogout = () => {
@@ -26,21 +34,35 @@ const Navbar = () => {
         {/* Logo Section */}
         <div className="flex items-center">
           <img src="/logo.png" alt="Logo" className="h-14 w-24 mr-4" />
-          <h1 className="text-2xl font-serif font-bold text-[#4a3628]">Library System</h1>
+          <h1 className="text-2xl font-serif font-bold text-[#4a3628]">
+            Library System
+          </h1>
         </div>
 
-        {/* Nav Links */}
+        {/* Navigation Links */}
         <nav className="hidden lg:flex space-x-8 text-lg font-medium">
-          <Link className="text-[#4a3628] hover:text-[#2d1b0f] transition" to="/">Home</Link>
+          <Link className="text-[#4a3628] hover:text-[#2d1b0f] transition" to="/">
+            Home
+          </Link>
+
           {isLoggedIn && (
-            <Link className="text-[#4a3628] hover:text-[#2d1b0f] transition" to={role === "admin" ? "/admin-login" : `/dashboard/${localStorage.getItem("user_id")}`}>
+            <Link
+              className="text-[#4a3628] hover:text-[#2d1b0f] transition"
+              to={role === "admin"
+                ? "/admin-login"
+                : `/dashboard/${localStorage.getItem("user_id")}`
+              }
+            >
               Dashboard
             </Link>
           )}
-          <Link className="text-[#4a3628] hover:text-[#2d1b0f] transition" to="/support">Support</Link>
+
+          <Link className="text-[#4a3628] hover:text-[#2d1b0f] transition" to="/support">
+            Support
+          </Link>
         </nav>
 
-        {/* Auth Section */}
+        {/* Auth Buttons */}
         <div className="flex space-x-4">
           {isLoggedIn ? (
             <button

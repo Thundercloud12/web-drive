@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../utils/axios";
 import { CheckCircle, XCircle } from "lucide-react";
 
 const UserVerification = () => {
@@ -38,11 +38,13 @@ const UserVerification = () => {
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-[#f5ede3] to-[#d8c2a9]">
-      <h2 className="text-3xl font-bold mb-6 text-center text-[#4a3628]">User Verification</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center text-[#4a3628]">
+        User Verification
+      </h2>
 
-      <div className="overflow-x-auto shadow-lg rounded-xl">
+      <div className="overflow-x-auto shadow-xl rounded-xl">
         <table className="min-w-full bg-white rounded-xl overflow-hidden">
-          <thead className="bg-[#e9d9c5] text-[#4a3628] font-semibold">
+          <thead className="bg-[#e9d9c5] text-[#4a3628] font-semibold text-sm">
             <tr>
               <th className="py-3 px-4 text-left">ID</th>
               <th className="py-3 px-4 text-left">Name</th>
@@ -57,7 +59,9 @@ const UserVerification = () => {
                 className="hover:bg-[#fcf6f0] transition duration-200 text-sm"
               >
                 <td className="py-3 px-4">{user._id.slice(-6)}</td>
-                <td className="py-3 px-4">{user.fullname} {user.surname}</td>
+                <td className="py-3 px-4">
+                  {user.fullname} {user.surname}
+                </td>
                 <td className="py-3 px-4">{user.email}</td>
                 <td className="py-3 px-4">
                   <button
@@ -82,8 +86,8 @@ const UserVerification = () => {
 
       {/* Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl p-6 w-[95%] max-w-md shadow-lg relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm transition duration-300">
+          <div className="bg-white rounded-xl p-6 w-[95%] max-w-md shadow-xl relative animate-fade-in">
             <h3 className="text-2xl font-bold mb-2 text-[#4a3628]">
               {selectedUser.fullname} {selectedUser.surname}
             </h3>
@@ -96,7 +100,9 @@ const UserVerification = () => {
 
             <div className="space-y-3 mb-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1 font-semibold">Profile Image:</p>
+                <p className="text-sm text-gray-600 mb-1 font-semibold">
+                  Profile Image:
+                </p>
                 <img
                   src={selectedUser.profileImage}
                   alt="Profile"
@@ -105,7 +111,9 @@ const UserVerification = () => {
                 />
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1 font-semibold">ID Card Image:</p>
+                <p className="text-sm text-gray-600 mb-1 font-semibold">
+                  ID Card Image:
+                </p>
                 <img
                   src={selectedUser.idCardImage}
                   alt="ID Card"
@@ -122,7 +130,9 @@ const UserVerification = () => {
                 }
                 disabled={loading}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md transition text-white ${
-                  loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
                 <CheckCircle size={18} />

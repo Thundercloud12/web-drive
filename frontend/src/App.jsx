@@ -6,7 +6,7 @@ import Login from './pages/login';
 import Signup from './pages/signup';
 import HomePage from './pages/HomePage';
 import AdminKey from './pages/AdminLogin';
-
+import Footer from './pages/Footer';
 function App() {
   return (
     <>
@@ -19,6 +19,7 @@ function App() {
           <Route path="/admin-login" element={<AdminKey />} />
         </Routes>
       </div>
+      <Footer />
     </>
   );
 }

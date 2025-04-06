@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../utils/axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [submit, setSubmit] = useState(false);
 
   const navigate = useNavigate();
@@ -13,28 +14,33 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmit(true);
-    setError("");
 
     try {
       const response = await axios.post(
         "http://localhost:4300/api/v1/users/login",
-        { username, password }
+        { username, password },
+        { withCredentials: true } // to send/receive cookies
       );
 
       if (response.data.token) {
         const userId = response.data.user_id;
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user_id", userId);
+        localStorage.setItem("role", response.data.role);
 
-        if (response.data.role === "admin") {
-          navigate("/admin-login");
-        } else {
-          navigate(`/dashboard/${userId}`);
-        }
+        toast.success("Login successful!");
+
+        setTimeout(() => {
+          if (response.data.role === "admin") {
+            navigate("/admin-login");
+          } else {
+            navigate(`/dashboard/${userId}`);
+          }
+        }, 1000);
       }
     } catch (error) {
       console.error(error);
-      setError(error.response?.data?.msg || "Login failed, try again!");
+      toast.error(error.response?.data?.msg || "Login failed, try again!");
     } finally {
       setSubmit(false);
     }
@@ -42,6 +48,7 @@ function Login() {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-r from-[#e7dac7] to-[#c2a27a] mt-10 w-full h-full">
+      <ToastContainer position="top-center" autoClose={3000} />
       <div className="relative w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-[#c2a27a]">
         <h2 className="text-center text-3xl font-serif font-bold text-[#4a3628] mb-4">
           Log Into your Account
@@ -49,8 +56,6 @@ function Login() {
         <p className="text-center text-gray-700 mb-6">
           Join the library and explore a world of knowledge.
         </p>
-
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -90,7 +95,6 @@ function Login() {
           </button>
         </form>
 
-        {/* 🧠 Add login guidance */}
         <p className="text-sm text-center text-gray-500 mt-4">
           📩 Credentials were sent to your email after verification.
         </p>

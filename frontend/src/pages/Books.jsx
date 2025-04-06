@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../utils/axios"; // ✅ Use your custom axios with baseURL
 
 const Books = () => {
   const [books, setBooks] = useState([]);
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/books");
+      const res = await axios.get("/books");
       setBooks(res.data.books || []);
     } catch (error) {
       console.error("Failed to fetch books", error);
@@ -31,7 +31,7 @@ const Books = () => {
               className="bg-[#161b22] border border-gray-700 rounded-lg overflow-hidden shadow-lg"
             >
               <img
-                src={book.image}
+                src={`http://localhost:4300/${book.image}`} // ✅ Important fix
                 alt={book.title}
                 className="h-48 w-full object-cover"
               />

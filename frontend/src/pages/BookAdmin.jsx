@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../utils/axios";
 
 const BooksAdmin = () => {
   const [books, setBooks] = useState([]);
@@ -14,7 +14,7 @@ const BooksAdmin = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/books");
+      const res = await axios.get("/books");
       setBooks(res.data.books || []);
     } catch (error) {
       console.error("Error fetching books", error);
@@ -42,18 +42,13 @@ const BooksAdmin = () => {
     formData.append("image", form.image);
 
     try {
-      const response = await axios.post(
-        "http://localhost:4300/api/v1/books/add",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post("/books/add", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log("Book added:", response.data);
-      fetchBooks(); // Refresh book list
+      fetchBooks();
     } catch (error) {
       console.error("Error adding book:", error.response?.data || error);
     }
@@ -79,6 +74,7 @@ const BooksAdmin = () => {
           value={form.title}
           onChange={handleInputChange}
           className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+          required
         />
         <input
           type="text"
@@ -87,6 +83,7 @@ const BooksAdmin = () => {
           value={form.author}
           onChange={handleInputChange}
           className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+          required
         />
         <textarea
           name="description"
@@ -94,6 +91,7 @@ const BooksAdmin = () => {
           value={form.description}
           onChange={handleInputChange}
           className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+          required
         />
         <input
           type="number"
@@ -102,6 +100,7 @@ const BooksAdmin = () => {
           value={form.quantity}
           onChange={handleInputChange}
           className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+          required
         />
         <input
           type="text"
@@ -110,12 +109,14 @@ const BooksAdmin = () => {
           value={form.ISBN}
           onChange={handleInputChange}
           className="w-full p-2 mb-2 rounded bg-[#0d1117] border border-gray-700"
+          required
         />
         <input
           type="file"
           onChange={handleImageChange}
           className="w-full p-2 mb-4 rounded bg-[#0d1117] border border-gray-700"
           accept="image/*"
+          required
         />
         <button
           type="submit"
@@ -132,7 +133,7 @@ const BooksAdmin = () => {
             className="bg-[#161b22] border border-gray-700 rounded-xl p-4 shadow"
           >
             <img
-              src={book.image}
+              src={`http://localhost:4300/${book.image}`} // ✅ If image path is like "uploads/img.jpg"
               alt={book.title}
               className="w-full h-48 object-cover rounded mb-2"
             />

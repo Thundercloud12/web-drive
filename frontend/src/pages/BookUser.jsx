@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../utils/axios'; // Using custom axios instance
 
 const BooksUser = () => {
   const [books, setBooks] = useState([]);
@@ -8,9 +8,7 @@ const BooksUser = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/books", {
-        withCredentials: true
-      });
+      const res = await axios.get("/books");
       setBooks(res.data.books || []);
     } catch (error) {
       console.error("Error fetching books", error);
@@ -20,11 +18,7 @@ const BooksUser = () => {
   const handleIssue = async (bookId) => {
     setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:4300/api/v1/rentals/issue",
-        { bookId },
-        { withCredentials: true }
-      );
+      const res = await axios.post("/rentals/issue", { bookId });
       alert("✅ Request sent! Status set to pending.");
       setSelectedBook(null);
     } catch (err) {
@@ -45,7 +39,11 @@ const BooksUser = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {books.map(book => (
           <div key={book._id} className="bg-[#161b22] border border-gray-700 rounded-lg overflow-hidden shadow-lg">
-            <img src={book.image} alt={book.title} className="h-48 w-full object-cover" />
+            <img
+              src={`http://localhost:4300/${book.image}`} // ✅ Fix here
+              alt={book.title}
+              className="h-48 w-full object-cover"
+            />
             <div className="p-4">
               <h2 className="text-xl font-semibold">{book.title}</h2>
               <p className="text-sm text-gray-400">{book.author}</p>
@@ -68,7 +66,11 @@ const BooksUser = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
           <div className="bg-[#161b22] border border-gray-600 rounded-lg p-6 w-[90%] md:w-1/2 max-w-xl">
             <h3 className="text-xl font-bold mb-2">{selectedBook.title}</h3>
-            <img src={selectedBook.image} alt={selectedBook.title} className="w-full h-60 object-cover rounded" />
+            <img
+              src={`http://localhost:4300/${selectedBook.image}`}
+              alt={selectedBook.title}
+              className="w-full h-60 object-cover rounded"
+            />
             <p className="mt-4 text-gray-300">{selectedBook.description}</p>
             <p className="mt-2 text-sm text-gray-400">Author: {selectedBook.author}</p>
             <p className="text-sm text-gray-400">ISBN: {selectedBook.ISBN}</p>

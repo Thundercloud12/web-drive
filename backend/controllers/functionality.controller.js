@@ -2,19 +2,21 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import Admin from "../models/admin.model.js";
-import Book from "../models/bookModel.js"
+import Book from "../models/bookModel.js";
 import Rental from "../models/rentalmodel.js";
 
-const fetchAllBooks = async(req,res) => {
-   try {
-     const books = await Book.find();
-     return res.json(books)
-   } catch (error) {
+// ✅ Fetch All Books
+const fetchAllBooks = async (req, res) => {
+  try {
+    const books = await Book.find();
+    return res.status(200).json(books);
+  } catch (error) {
     console.log("Error in fetching books", error);
-    
-   }
-}
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
+// ✅ Get Verified Users With Rental Count
 const getUsersWithRentals = async (req, res) => {
   try {
     const users = await User.find({ isVerified: true });
@@ -23,7 +25,7 @@ const getUsersWithRentals = async (req, res) => {
       users.map(async (user) => {
         const count = await Rental.countDocuments({
           user: user._id,
-          status: { $in: ["approved", "collected"] }
+          status: { $in: ["approved", "collected"] },
         });
 
         return {
@@ -32,7 +34,7 @@ const getUsersWithRentals = async (req, res) => {
           fullname: user.fullname,
           surname: user.surname,
           email: user.email,
-          issuedCount: count
+          issuedCount: count,
         };
       })
     );
@@ -44,30 +46,40 @@ const getUsersWithRentals = async (req, res) => {
   }
 };
 
-const newIssue = async (req,res) => {
-  const {ISBN} = req.body;
-  const userId=req.user.id;
+// ✅ New Rental Issue Request
+const newIssue = async (req, res) => {
+  const { ISBN } = req.body;
+  const userId = req.user.id;
 
-  const user = await User.findOne({userId: userId})
-  if(!user) return res.status(500).json({ message: "problem in newIssue controller" });
-  const books = await Book.findOne({ISBN: ISBN})
-   if(!books) return res.status(500).json({ message: "problem in newIssue controller" });
-  const newRental = new Rental({
-    user: user,
-    book: books,
-    status: "pending",
-    requestDate: new Date()
-  })
-
-  await newRental.save()
-  res.status(201).json({message: "Rental request processe successfully"})
-}
-
-const addBook = async (req,res) => {
-  const {title, author, descripiton, quantity, ISBN} = req.body;
   try {
-    if(!req.file) return res.json(400).json({error: "Image is required"})
-    
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const book = await Book.findOne({ ISBN });
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    const newRental = new Rental({
+      user: user._id,
+      book: book._id,
+      status: "pending",
+      requestDate: new Date(),
+    });
+
+    await newRental.save();
+    res.status(201).json({ message: "Rental request processed successfully" });
+  } catch (err) {
+    console.log("Error in newIssue:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// ✅ Add New Book
+const addBook = async (req, res) => {
+  const { title, author, descripiton, quantity, ISBN } = req.body;
+
+  try {
+    if (!req.file) return res.status(400).json({ error: "Image is required" });
+
     const imageUrl = `/uploads/${req.file.filename}`;
 
     const newBook = new Book({
@@ -76,49 +88,51 @@ const addBook = async (req,res) => {
       descripiton,
       quantity,
       ISBN,
-      imageUrl
-    })
+      imageUrl,
+    });
+
     await newBook.save();
-    res.status(201).json(newBook)
+    res.status(201).json(newBook);
   } catch (error) {
-    console.log("Error in add Book", error);
-    
+    console.log("Error in addBook:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
-const pendingBooks = async (req,res) => {
+// ✅ Get Users With Pending Status (for Admin)
+const pendingBooks = async (req, res) => {
   try {
-    const data = User.find({status: "pending"})
-    if(!data) return res.status(500).json({message: "Internal server error"})
-    return res.status(200).json(data)
+    const users = await User.find({ status: "pending" });
+    res.status(200).json(users);
   } catch (error) {
-    console.log("Error in pending books", error);
-    
+    console.log("Error in pendingBooks:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
-const updateRentalStatus = async (req,res) => {
-  const {id} = req.params;
+// ✅ Update Rental Status (Admin Flow)
+const updateRentalStatus = async (req, res) => {
+  const { id } = req.params;
   try {
-    const rental = await Rental.findById(id).populate('book user')
+    const rental = await Rental.findById(id).populate("book user");
     if (!rental) return res.status(404).json({ message: "Rental not found" });
+
     let updatedStatus;
 
-    // Transition status
     switch (rental.status) {
-      case 'pending':
-        rental.status = 'approved';
-        updatedStatus = 'approved';
+      case "pending":
+        rental.status = "approved";
+        updatedStatus = "approved";
         break;
-      case 'approved':
-        rental.status = 'collected';
+      case "approved":
+        rental.status = "collected";
         rental.collectedDate = new Date();
-        updatedStatus = 'collected';
+        updatedStatus = "collected";
         break;
-      case 'collected':
-        rental.status = 'returned';
+      case "collected":
+        rental.status = "returned";
         rental.returnedDate = new Date();
-        updatedStatus = 'returned';
+        updatedStatus = "returned";
         break;
       default:
         return res.status(400).json({ message: "Invalid status transition" });
@@ -131,9 +145,44 @@ const updateRentalStatus = async (req,res) => {
       rental,
     });
   } catch (error) {
-    console.log("Error in updateRentalStatus", error);
-    
+    console.log("Error in updateRentalStatus:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
-export  {getUsersWithRentals, fetchAllBooks, newIssue, addBook, pendingBooks}
+// ✅ Seed Admin (initial setup)
+const seedAdmin = async (req, res) => {
+  try {
+    const existingAdmin = await Admin.findOne({ email: "pandeysatyam1802@gmail.com" });
+    if (existingAdmin) {
+      return res.status(400).json({ message: "Admin already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+
+    const admin = new Admin({
+      fullname: "Satyam",
+      surname: "Pandey",
+      email: "pandeysatyam1802@gmail.com",
+      password: hashedPassword,
+      orgNumber: "098765",
+    });
+
+    await admin.save();
+    res.status(201).json({ message: "Admin created successfully" });
+  } catch (error) {
+    console.log("Error in seedAdmin:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// ✅ Export All Controllers
+export {
+  getUsersWithRentals,
+  fetchAllBooks,
+  newIssue,
+  addBook,
+  pendingBooks,
+  updateRentalStatus,
+  seedAdmin,
+};
