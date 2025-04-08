@@ -8,8 +8,10 @@ const BooksUser = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("/books");
-      setBooks(res.data.books || []);
+      const res = await axios.get("http://localhost:4300/api/v1/users/books");
+      console.log(res);
+      
+      setBooks(res.data || []);
     } catch (error) {
       console.error("Error fetching books", error);
     }
@@ -18,7 +20,17 @@ const BooksUser = () => {
   const handleIssue = async (bookId) => {
     setLoading(true);
     try {
-      const res = await axios.post("/rentals/issue", { bookId });
+     const token = localStorage.getItem("token"); // or sessionStorage.getItem("token")
+
+    await axios.post(
+      "http://localhost:4300/api/v1/users/rentals/issue",
+      { ISBN: selectedBook.ISBN}, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
       alert("✅ Request sent! Status set to pending.");
       setSelectedBook(null);
     } catch (err) {
@@ -84,7 +96,7 @@ const BooksUser = () => {
                 Close
               </button>
               <button
-                onClick={() => handleIssue(selectedBook._id)}
+                onClick={() => handleIssue(selectedBook.ISBN)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded"
                 disabled={loading}
               >

@@ -18,7 +18,7 @@ const adminSchema = new mongoose.Schema({
         required: true
     },
     orgNumber: {
-        type: Number,
+        type: String,
         required: true
     },
     users: [

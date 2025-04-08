@@ -3,6 +3,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import userRouter from "./routes/userRoute.js"
 import statRoute from "./routes/statRoute.js"
+import path from "path"
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static("public"))
 app.use(cookieParser())
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // ✅ Now routes will have CORS headers
 app.use("/api/v1/stats", statRoute)

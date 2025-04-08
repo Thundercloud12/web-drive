@@ -10,10 +10,12 @@ const UserVerification = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        
         const response = await axios.get(
           "http://localhost:4300/api/v1/users/fetch-notverified-users"
         );
-        setUsers(response.data);
+        console.log(response);
+        setUsers(response.data.users);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -114,12 +116,14 @@ const UserVerification = () => {
                 <p className="text-sm text-gray-600 mb-1 font-semibold">
                   ID Card Image:
                 </p>
+                <div className="max-h-52 overflow-auto border rounded-md">
                 <img
-                  src={selectedUser.idCardImage}
+                  src={`http://localhost:4300/${selectedUser.idCardImage.replace(/\\/g, "/")}`}
                   alt="ID Card"
-                  className="w-full rounded-md border"
+                  className="w-full object-contain"
                   onError={(e) => (e.target.src = "/fallback-id.png")}
                 />
+                </div>
               </div>
             </div>
 

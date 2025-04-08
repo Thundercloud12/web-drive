@@ -55,8 +55,18 @@ const login = async (req, res) => {
   try {
     const admin = await Admin.findOne({ username });
     if (admin) {
-      return res.json({ role: "admin" });
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+
+      const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+      return res.json({
+        token,
+        role: "admin",
+        user_id: admin._id
+      });
     }
+
 
     const user = await User.findOne({ username, isVerified: true });
     if (!user) return res.status(400).json({ msg: "User not found" });
@@ -75,7 +85,7 @@ const login = async (req, res) => {
 
 // Admin Login
 const adminLogin = async (req, res) => {
-  const { orgKey, password } = req.body;
+  const { orgKey} = req.body;
 
   try {
     if (!orgKey) {
@@ -88,11 +98,11 @@ const adminLogin = async (req, res) => {
       return res.status(403).json({ message: "Invalid admin key" });
     }
 
-    const admin = await Admin.findOne({ orgKey });
+    const trimmedKey = orgKey.trim();
+   const admin = await Admin.findOne({ orgNumber: trimmedKey });
+
     if (!admin) return res.status(400).json({ message: "Admin not found" });
 
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 

@@ -26,6 +26,7 @@ import UserVerification from './pages/UserVerification';
 
 import Books from './pages/Books';
 import BookUser from './pages/BookUser';
+import CloseIssue from './pages/CloseIssue';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/admin/issue-requests" element={<IssueAdmin />} />
           <Route path="/admin/users" element={<UserList />} />
           <Route path="/admin/user-verification" element={<UserVerification />} />
+          <Route path="/admin/close-issue" element = {<CloseIssue />} />
         </Routes>
       </div>
       <Footer />

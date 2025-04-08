@@ -56,6 +56,7 @@ const newIssue = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const book = await Book.findOne({ ISBN });
+    if(book.quantity <= 0) return res.status(404).json({message: "Sorry all the availbale books are rented out!"})
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     const newRental = new Rental({
@@ -75,7 +76,7 @@ const newIssue = async (req, res) => {
 
 // ✅ Add New Book
 const addBook = async (req, res) => {
-  const { title, author, descripiton, quantity, ISBN } = req.body;
+  const { title, author, description, quantity, ISBN } = req.body;
 
   try {
     if (!req.file) return res.status(400).json({ error: "Image is required" });
@@ -85,7 +86,7 @@ const addBook = async (req, res) => {
     const newBook = new Book({
       title,
       author,
-      descripiton,
+      description,
       quantity,
       ISBN,
       imageUrl,
@@ -102,13 +103,59 @@ const addBook = async (req, res) => {
 // ✅ Get Users With Pending Status (for Admin)
 const pendingBooks = async (req, res) => {
   try {
-    const users = await User.find({ status: "pending" });
+    const users = await Rental.find({
+      status: { $in: ["pending", "approved"] }
+    }).populate("user").populate("book");
     res.status(200).json(users);
   } catch (error) {
     console.log("Error in pendingBooks:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const collectedModal = async (req, res) => {
+  try {
+    const users = await Rental.find({
+      status: "collected"
+    }).populate("user").populate("book");
+    res.status(200).json(users);
+  } catch (error) {
+    console.log("Error in pendingBooks:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const closeRentalIssue = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const rental = await Rental.findById(id);
+    if (!rental) {
+      return res.status(404).json({ message: "Rental not found" });
+    }
+
+    if (rental.status !== "collected") {
+      return res.status(400).json({ message: "Rental is not in collected state" });
+    }
+
+    // Update rental status
+    rental.status = "returned";
+    await rental.save();
+
+    // Update book quantity
+    const book = await Book.findById(rental.book);
+    if (book) {
+      book.quantity += 1;
+      await book.save();
+    }
+
+    res.status(200).json({ message: "Rental successfully closed" });
+  } catch (error) {
+    console.error("Error closing rental:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 // ✅ Update Rental Status (Admin Flow)
 const updateRentalStatus = async (req, res) => {
@@ -128,6 +175,7 @@ const updateRentalStatus = async (req, res) => {
         rental.status = "collected";
         rental.collectedDate = new Date();
         updatedStatus = "collected";
+        rental.book.quanity--
         break;
       case "collected":
         rental.status = "returned";
@@ -151,7 +199,7 @@ const updateRentalStatus = async (req, res) => {
 };
 
 // ✅ Seed Admin (initial setup)
-const seedAdmin = async (req, res) => {
+const seedAdmin = async () => {
   try {
     const existingAdmin = await Admin.findOne({ email: "pandeysatyam1802@gmail.com" });
     if (existingAdmin) {
@@ -163,16 +211,15 @@ const seedAdmin = async (req, res) => {
     const admin = new Admin({
       fullname: "Satyam",
       surname: "Pandey",
+      username: "Satyam1202",
       email: "pandeysatyam1802@gmail.com",
       password: hashedPassword,
-      orgNumber: "098765",
+      orgNumber:"098765",
     });
 
     await admin.save();
-    res.status(201).json({ message: "Admin created successfully" });
   } catch (error) {
     console.log("Error in seedAdmin:", error);
-    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -185,4 +232,6 @@ export {
   pendingBooks,
   updateRentalStatus,
   seedAdmin,
+  collectedModal,
+  closeRentalIssue
 };
