@@ -45,6 +45,7 @@ const BooksAdmin = () => {
     formData.append("quantity", form.quantity);
     formData.append("ISBN", form.ISBN);
     formData.append("imageUrl", form.imageUrl);
+    formData.append("folderName", "books");
 
     try {
       await axios.post("/users/books/add", formData, {
@@ -218,7 +219,7 @@ const BooksAdmin = () => {
               <strong>Description:</strong> {selectedBook.description}
             </p>
             <img
-              src={`http://localhost:4300/${selectedBook.imageUrl}`}
+              src={selectedBook.imageUrl}
               alt={selectedBook.title}
               className="max-h-64 w-full object-contain rounded border border-gray-700"
             />

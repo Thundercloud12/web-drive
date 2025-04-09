@@ -19,7 +19,7 @@ const registerUser = async (req, res) => {
 
   const { fullname, surname, feesReceiptNo, email } = req.body;
 
-  if (!req.file) {
+  if (!req.file || !req.file.path) {
     return res.status(400).json({ msg: "ID Card image is not uploaded, please try again" });
   }
 
@@ -31,7 +31,7 @@ const registerUser = async (req, res) => {
       fullname,
       surname,
       feesReceiptNo,
-      idCardImage: req.file.path,
+      idCardImage: req.file.path, // Cloudinary provides the full URL in `path`
       email
     });
 
@@ -41,10 +41,12 @@ const registerUser = async (req, res) => {
 
     res.status(200).json({ token, isVerified: user.isVerified });
   } catch (err) {
+
     console.error("❌ Error in registerUser:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Login User or Admin
 const login = async (req, res) => {

@@ -37,6 +37,7 @@ function Signup() {
     formData.append("feesReceiptNo", feesReceiptNo);
     formData.append("email", email);
     formData.append("idCardImage", idCardImage);
+    formData.append("folderName", "users");
 
     try {
       const res = await axios.post(

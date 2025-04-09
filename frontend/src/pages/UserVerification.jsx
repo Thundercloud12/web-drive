@@ -118,7 +118,7 @@ const UserVerification = () => {
                 </p>
                 <div className="max-h-52 overflow-auto border rounded-md">
                 <img
-                  src={`http://localhost:4300/${selectedUser.idCardImage.replace(/\\/g, "/")}`}
+                  src={selectedUser.idCardImage}
                   alt="ID Card"
                   className="w-full object-contain"
                   onError={(e) => (e.target.src = "/fallback-id.png")}

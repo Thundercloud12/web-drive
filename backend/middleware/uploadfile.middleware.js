@@ -1,42 +1,46 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import multer from "multer";
-import path from "path";
-import fs from "fs";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { v2 as cloudinary } from "cloudinary";
 
-// Ensure uploads folder exists
-const uploadDir = "uploads";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:process.env.CLOUDINARY_API_KEY,
+  api_secret:process.env.CLOUDINARY_API_SECRET,
+});
 
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`;
-    cb(null, uniqueSuffix);
+// Cloudinary storage with dynamic folder
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const folderName = req.body.folderName || "default_folder"; // You can send this from the frontend
+    return {
+      folder: folderName,
+      allowed_formats: ["jpeg", "jpg", "png", "gif"],
+      public_id: `${file.fieldname}-${Date.now()}`,
+    };
   },
 });
 
-// File filter to accept only images
+// File filter to allow only image types
 const fileFilter = (req, file, cb) => {
+  
   const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+  const extname = allowedTypes.test(file.originalname.toLowerCase());
   const mimetype = allowedTypes.test(file.mimetype);
-
   if (extname && mimetype) {
     return cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed (jpeg, jpg, png, gif)"));
   }
+  cb(new Error("Only image files are allowed (jpeg, jpg, png, gif)"));
 };
 
-// Initialize multer
+// Initialize multer with Cloudinary
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
 export default upload;

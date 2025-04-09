@@ -1,10 +1,8 @@
 import connectDB from "./db/connectDB.js";
-import dotenv from "dotenv"
+import dotenv from 'dotenv';
+dotenv.config();
 import app from './app.js'
 import { seedAdmin } from "./controllers/functionality.controller.js";
-dotenv.config({
-    path: './.env'
-})
 
 
 connectDB()
