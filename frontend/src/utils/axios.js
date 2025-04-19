@@ -3,7 +3,7 @@ import  store  from "../store/store";
 import { logout } from '../slices/authSlice';
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "https://web-drive-ir4q.onrender.com/api",
   withCredentials: true,
 });
 
