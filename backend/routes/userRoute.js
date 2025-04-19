@@ -56,7 +56,7 @@ router.delete("/delete-book", authMiddleware, deleteBook);
 router.post("/change-password", authMiddleware, changePassword);
 router.get("/validate-token", authMiddleware, validateToken)
 router.get('/my-rentals/:id', authMiddleware, getMyRentals);
-router.post("/admin-signup/:id", adminSignup)
+router.post("/admin-signup", adminSignup)
 
 
 export default router;
