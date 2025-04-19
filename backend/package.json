@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js",   // or whatever your entry file is
+    "start": "node index.js",
     "build": "echo 'No build step needed'"
   },
   "keywords": [],
