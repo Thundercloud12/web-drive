@@ -8,7 +8,7 @@ import path from "path"
 const app = express()
 
 
-app.use(cors({ origin: ["http://localhost:5173","https://library-management-system-new-final.vercel.app"],credentials: true }))
+app.use(cors({ origin: ["http://localhost:5173","https://lms-main-delta.vercel.app/"],credentials: true }))
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
